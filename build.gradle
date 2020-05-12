@@ -1,0 +1,53 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'com.github.ben-manes.versions' version '0.28.0'
+    id 'org.springframework.boot' version '2.2.6.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.9.RELEASE'
+    id 'com.bmuschko.docker-spring-boot-application' version '6.4.0'
+}
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+group = 'com.asteroid.duck'
+version = '0.0.1'
+description = 'A REST wrapper on plant UML libraries'
+
+configurations {
+    developmentOnly
+    runtimeClasspath {
+        extendsFrom developmentOnly
+    }
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-dependencies:2.2.6.RELEASE'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    testImplementation ('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
+
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+application {
+    mainClassName = "com.asteroid.duck.plantuml.rest.Controller"
+}
+
+docker {
+    springBootApplication {
+        baseImage = 'openjdk:14-alpine'
+        ports = [8080]
+        images = ["awesome-spring-boot:${project.version}", 'awesome-spring-boot:latest']
+        jvmArgs = ['-Dspring.profiles.active=production', '-Xmx2048m']
+        maintainer = 'Chris Senior "christopher.senior@gmail.com"'
+    }
+}
